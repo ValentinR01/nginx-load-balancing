@@ -4,23 +4,36 @@ services:
   web:
     image: nginx:1.23.2
     volumes:
-    - ./templates:/etc/nginx/templates
+    - ./templates/load_balancer.conf:/etc/nginx/nginx.conf
     ports:
     - "8080:80"
     environment:
     - NGINX_PORT=80
+    networks:
+    - loadbalancer
 
   service1:
     build: 
       context: .
-      dockerfile: ./dockerfiles/Dockerfile_service1
+      dockerfile: Dockerfile
+    container_name: service1
+    restart: always
     volumes:
       - ./backend/service1:/app
+    networks:
+      - loadbalancer
 
   service2:
     build: 
       context: .
-      dockerfile: ./dockerfiles/Dockerfile_service1
+      dockerfile: Dockerfile
+    container_name: service2
+    restart: always
     volumes:
       - ./backend/service2:/app
+    networks:
+      - loadbalancer
+
+networks:
+  loadbalancer:
     
